@@ -1,11 +1,9 @@
-
 from io import StringIO
 from pathlib import Path
 
-from document_parser.parsers import HtmlParser
-from document_parser.parsers import PdfParser
-from document_parser.parsers import DocParser
-from document_parser.parsers import DjvuParser
+from document_parser.parsers import (DjvuParser, DocParser, HtmlParser,
+                                     PdfParser)
+
 
 class ParserManager:
     SUPPORTED_EXTENSIONS = {
@@ -15,7 +13,7 @@ class ParserManager:
         ".docx": DocParser,
         ".djvu": DjvuParser,
     }
-     
+
     @staticmethod
     def get_parser(path: Path):
         """Chooses parser due to it's extension
@@ -31,18 +29,20 @@ class ParserManager:
         parser_class = ParserManager.SUPPORTED_EXTENSIONS[extension]
         if parser_class:
             return parser_class(path)
-       
+
         raise ValueError("Unsupported file")
 
+
 def main():
-    path = r"C:\Users\Очир\Downloads\file-sample_500kB.doc"
+    path = r"C:\Users\file-sample_500kB.doc"
     parser = ParserManager.get_parser(path)
     text = parser.parse().getvalue()
-    
-    #print(text)
 
-    with open("test.txt", mode='w', encoding='utf-8') as file:
+    # print(text)
+
+    with open("test.txt", mode="w", encoding="utf-8") as file:
         file.write(text)
+
 
 if __name__ == "__main__":
     main()
