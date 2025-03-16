@@ -6,8 +6,9 @@ from pathlib import Path
 import fitz  # PyMuPDF
 import ftfy
 import html2text
+from pymupdf import EmptyFileError
 from spire.doc import Document
-
+import chardet
 
 class BaseParser(ABC):
     def __init__(self, path: Path):
@@ -27,9 +28,13 @@ class HtmlParser(BaseParser):
         text_handler.ignore_links = True
         text_handler.ignore_images = True
         text_handler.ignore_mailto_links = True
-
         stream = StringIO()
-        with self.path.open("r", encoding="utf-8") as file:
+        with self.path.open('rb') as file:
+            raw_data = file.read()
+            result = chardet.detect(raw_data)
+            encoding = result['encoding']
+
+        with self.path.open("r", encoding=encoding) as file:
             content = file.read()
             stream.write(text_handler.handle(content))
 
@@ -42,10 +47,14 @@ class PdfParser(BaseParser):
 
     def parse(self) -> StringIO:
         stream = StringIO()
-        with fitz.open(self.path) as file:
+        try:
+            file = fitz.open(self.path)
             for page in file:
                 text = page.get_text(sort=False)  # что лучше True/False
                 stream.write(ftfy.fix_text(text))
+            file.close()
+        except EmptyFileError:
+            pass
         return stream
 
 

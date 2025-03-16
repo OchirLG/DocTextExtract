@@ -15,17 +15,19 @@ class ParserManager:
     }
 
     @staticmethod
-    def get_parser(path: Path):
-        """Chooses parser due to it's extension
+    def get_parser(path: str):
+        """Chooses parser due to it`s extension
 
         Args:
-            path (Path): path to the file in system
+            path (str): path to the file in system
         """
         path = Path(path)
         if not path.is_file():
             raise ValueError("file not found")
 
         extension = path.suffix
+        if extension not in ParserManager.SUPPORTED_EXTENSIONS:
+            raise ValueError("Unsupported file extension")
         parser_class = ParserManager.SUPPORTED_EXTENSIONS[extension]
         if parser_class:
             return parser_class(path)
