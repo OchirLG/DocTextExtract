@@ -40,7 +40,7 @@ class PdfParser(BaseParser):
     def __init__(self, path):
         super().__init__(path)
 
-    def parse(self):
+    def parse(self) -> StringIO:
         stream = StringIO()
         with fitz.open(self.path) as file:
             for page in file:
@@ -54,7 +54,7 @@ class DocParser(BaseParser):
     def __init__(self, path):
         super().__init__(path)
 
-    def parse(self):
+    def parse(self) -> StringIO:
         stream = StringIO()
         doc = Document()
 
@@ -81,7 +81,7 @@ class DjvuParser(BaseParser):
     def __init__(self, path):
         super().__init__(path)
 
-    def parse(self):
+    def parse(self) -> StringIO:
         stream = StringIO()
         result = subprocess.run(
             ["djvutxt", str(self.path.resolve())], capture_output=True, text=True
